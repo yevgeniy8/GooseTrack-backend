@@ -22,6 +22,7 @@ router.get('/:contactId', async (req, res, next) => {
         );
         if (!contact) {
             next();
+            return;
         }
         res.json(contact);
     } catch (error) {
@@ -32,9 +33,8 @@ router.get('/:contactId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const { error } = schema.validate(req.body);
-        console.log(error);
         if (error) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: `missing required ${error.message
                     .split(' ')[0]
                     .slice(1, -1)} field`,
@@ -56,6 +56,7 @@ router.delete('/:contactId', async (req, res, next) => {
         );
         if (!contact) {
             next();
+            return;
         }
         res.json({ message: 'contact deleted' });
     } catch (error) {
@@ -67,7 +68,7 @@ router.put('/:contactId', async (req, res, next) => {
     try {
         const { error } = schema.validate(req.body);
         if (error) {
-            res.status(400).json({
+            return res.status(400).json({
                 message: 'missing fields',
             });
         }
@@ -79,8 +80,8 @@ router.put('/:contactId', async (req, res, next) => {
 
         if (!contact) {
             next();
+            return;
         }
-
         res.json(contact);
     } catch (error) {
         next(error);
