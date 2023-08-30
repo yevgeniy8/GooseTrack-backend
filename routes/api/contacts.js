@@ -21,8 +21,7 @@ router.get('/:contactId', async (req, res, next) => {
             req.params.contactId
         );
         if (!contact) {
-            next();
-            return;
+            return next();
         }
         res.json(contact);
     } catch (error) {
