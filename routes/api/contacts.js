@@ -34,8 +34,14 @@ router.get('/:contactId', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const { error } = schema.validate(req.body);
+        console.log(error);
         if (error) {
-            throw HttpError(400, 'missing required name field');
+            throw HttpError(
+                400,
+                `missing required ${error.message
+                    .split(' ')[0]
+                    .slice(1, -1)} field`
+            );
         }
 
         const { name, email, phone } = req.body;
