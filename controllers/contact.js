@@ -1,10 +1,10 @@
-const Book = require('../models/contact');
+const Contact = require('../models/contact');
 
 const schema = require('../schema/schema');
 
 const getAll = async (req, res, next) => {
     try {
-        const contacts = await Book.find();
+        const contacts = await Contact.find();
         res.json(contacts);
     } catch (error) {
         next(error);
@@ -13,7 +13,7 @@ const getAll = async (req, res, next) => {
 
 const getById = async (req, res, next) => {
     try {
-        const contact = await Book.findById(req.params.contactId);
+        const contact = await Contact.findById(req.params.contactId);
         if (!contact) {
             return next();
         }
@@ -41,7 +41,7 @@ const create = async (req, res, next) => {
             email,
             phone,
         };
-        const doc = await Book.create(contact);
+        const doc = await Contact.create(contact);
         res.status(201).json(doc);
     } catch (error) {
         next(error);
@@ -50,7 +50,7 @@ const create = async (req, res, next) => {
 
 const remove = async (req, res, next) => {
     try {
-        const contact = await Book.findByIdAndDelete(req.params.contactId);
+        const contact = await Contact.findByIdAndDelete(req.params.contactId);
         if (!contact) {
             next();
             return;
@@ -70,7 +70,7 @@ const update = async (req, res, next) => {
             });
         }
 
-        const contact = await Book.findByIdAndUpdate(
+        const contact = await Contact.findByIdAndUpdate(
             req.params.contactId,
             req.body,
             { new: true }
@@ -95,7 +95,7 @@ const updateStatusContact = async (req, res, next) => {
                 message: 'missing field favorite',
             });
         }
-        const contact = await Book.findByIdAndUpdate(contactId, req.body, {
+        const contact = await Contact.findByIdAndUpdate(contactId, req.body, {
             new: true,
         });
 
