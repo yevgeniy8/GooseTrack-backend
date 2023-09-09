@@ -4,20 +4,23 @@ const ContactController = require('../../controllers/contact');
 
 const isValidId = require('../../middlewares/isValidId');
 
+const auth = require('../../middlewares/auth');
+
 const router = express.Router();
 
-router.get('/', ContactController.getAll);
+router.get('/', auth, ContactController.getAll);
 
-router.get('/:contactId', isValidId, ContactController.getById);
+router.get('/:contactId', auth, isValidId, ContactController.getById);
 
-router.post('/', ContactController.create);
+router.post('/', auth, ContactController.create);
 
-router.delete('/:contactId', isValidId, ContactController.remove);
+router.delete('/:contactId', auth, isValidId, ContactController.remove);
 
-router.put('/:contactId', isValidId, ContactController.update);
+router.put('/:contactId', auth, isValidId, ContactController.update);
 
 router.patch(
     '/:contactId/favorite',
+    auth,
     isValidId,
     ContactController.updateStatusContact
 );
