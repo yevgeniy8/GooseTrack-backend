@@ -1,10 +1,12 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const HttpError = require('../helpers/HttpError');
 
 const auth = async (req, res, next) => {
     const { authorization = '' } = req.headers;
     const [bearer, token] = authorization.split(' ');
     if (bearer !== 'Bearer') {
+        // throw HttpError(401, 'Not authorized');
         return res.status(401).json({ message: 'Not authorized' });
     }
     try {
@@ -17,9 +19,17 @@ const auth = async (req, res, next) => {
                 }
             }
 
+            if (!decode) {
+                // throw HttpError(401, 'Not authorized');
+                return next(HttpError(401, 'Not authorized'));
+                // return res.status(401).json({ message: 'Not authorized' });
+            }
+
             const user = await User.findById(decode.id);
             if (!user || !user.token || token !== user.token) {
-                return res.status(401).json({ message: 'Not authorized' });
+                return next(HttpError(401, 'Not authorized'));
+
+                // return res.status(401).json({ message: 'Not authorized' });
             }
             req.user = user;
             next();
