@@ -34,6 +34,11 @@ describe('test login controller', () => {
     });
 
     test("у відповіді повинен повертатися об'єкт user з 2 полями email и subscription з типом даних String", async () => {
-        
+        const response = await supertest(app)
+            .post('/users/login')
+            .send({ email: 'alex@gmail.com', password: 'qwerty' });
+
+        expect(typeof response.body.user.email).toBe('string');
+        expect(typeof response.body.user.subscription).toBe('string');
     });
 });
