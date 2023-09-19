@@ -1,12 +1,14 @@
 const userSchema = require('../schema/user');
 const User = require('../models/user');
-const bcrypt = require('bcrypt');
+const bcryptjs = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const gravatar = require('gravatar');
 const jimp = require('jimp');
 const path = require('path');
 const fs = require('fs').promises;
 const HttpError = require('../helpers/HttpError');
+const crypto = require('crypto');
+const sendEMail = require('../helpers/sendEmail');
 
 const register = async (req, res, next) => {
     const { error } = userSchema.userRegister.validate(req.body);
@@ -23,22 +25,97 @@ const register = async (req, res, next) => {
             // return res.status(409).json({ message: 'Email in use' });
         }
 
-        const passwordHash = await bcrypt.hash(password, 10);
-        console.log(passwordHash);
+        const passwordHash = await bcryptjs.hash(password, 10);
 
         const avatarURL = gravatar.url(email);
+
+        const verificationToken = crypto.randomUUID();
 
         const doc = await User.create({
             ...req.body,
             password: passwordHash,
             avatarURL,
+            verificationToken,
         });
+
+        await sendEMail({
+            to: email,
+            subject: `Welcome on board, ${email}`,
+            html: `
+        <p>To confirm your registration, please click on link below</p>
+        <p>
+          <a href="http://localhost:3000/users/verify/${verificationToken}">Click me</a>
+        </p>
+      `,
+            text: `
+        To confirm your registration, please click on link below\n
+        http://localhost:3000/api/auth/verify/${verificationToken}
+      `,
+        });
+
         res.status(201).json({
             user: {
                 email: doc.email,
                 subscription: doc.subscription,
             },
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const verifyEmail = async (req, res, next) => {
+    try {
+        const { verificationToken } = req.params;
+        const doc = await User.findOne({ verificationToken });
+        if (!doc) {
+            throw HttpError(404, 'User not found');
+        }
+
+        await User.findByIdAndUpdate(doc._id, {
+            verificationToken: null,
+            verify: true,
+        });
+
+        res.status(200).json({ message: 'Verification successful' });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const resendVerifyEmail = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const { error } = userSchema.userEmail.validate(req.body);
+        if (error) {
+            throw HttpError(400, 'missing required field email');
+            // return res.status(400).json({ error: error.message });
+        }
+
+        const doc = await User.findOne({ email });
+        if (!doc) {
+            throw HttpError(404, 'Email not found');
+        }
+        if (doc.verify) {
+            throw HttpError(400, 'Verification has already been passed');
+        }
+
+        await sendEMail({
+            to: email,
+            subject: `Welcome on board, ${email}`,
+            html: `
+        <p>To confirm your registration, please click on link below</p>
+        <p>
+          <a href="http://localhost:3000/users/verify/${doc.verificationToken}">Click me</a>
+        </p>
+      `,
+            text: `
+        To confirm your registration, please click on link below\n
+        http://localhost:3000/api/auth/verify/${doc.verificationToken}
+      `,
+        });
+
+        res.status(200).json({ message: 'Verification email sent' });
     } catch (error) {
         next(error);
     }
@@ -62,13 +139,17 @@ const login = async (req, res, next) => {
             //     .json({ message: 'Email or password is wrong' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcryptjs.compare(password, user.password);
 
         if (!isMatch) {
             throw HttpError(401, 'Email or password is wrong');
             // return res
             //     .status(401)
             //     .json({ message: 'Email or password is wrong' });
+        }
+
+        if (!user.verify) {
+            throw HttpError(401, 'Please verify your email');
         }
 
         const payload = {
@@ -165,6 +246,8 @@ const updateAvatar = async (req, res, next) => {
 
 module.exports = {
     register,
+    verifyEmail,
+    resendVerifyEmail,
     login,
     logout,
     getCurrent,

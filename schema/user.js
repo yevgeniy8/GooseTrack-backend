@@ -15,8 +15,13 @@ const userStatus = Joi.object({
     subscription: Joi.string().valid('starter', 'pro', 'business').required(),
 });
 
+const userEmail = Joi.object({
+    email: Joi.string().required(),
+});
+
 module.exports = {
     userRegister,
     userLogin,
     userStatus,
+    userEmail,
 };
