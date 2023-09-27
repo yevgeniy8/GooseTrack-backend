@@ -4,7 +4,11 @@ const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getAll = async (req, res, next) => {
     const owner = req.user._id;
-    const result = await Contact.find(owner).populate('owner');
+    // const result = await Task.find(owner, '-createdAt -updatedAt').populate(
+    //     'owner'
+    // );
+    const result = await Task.find(owner, '-createdAt -updatedAt');
+
     res.json(result);
 };
 
@@ -18,9 +22,12 @@ const add = async (req, res) => {
     res.status(201).json(result);
 };
 
-const getById = async (req, res) => {
-    const { contactId } = req.params;
-    const result = await Contact.findById(contactId);
+const edit = async (req, res) => {
+    const { taskId } = req.params;
+    const body = req.body;
+    const result = await Task.findByIdAndUpdate(taskId, body, {
+        new: true,
+    });
     if (!result) {
         throw HttpError(404, 'Not found');
     }
@@ -28,48 +35,17 @@ const getById = async (req, res) => {
 };
 
 const del = async (req, res) => {
-    const { contactId } = req.params;
-    const result = await Contact.findByIdAndDelete(contactId);
+    const { taskId } = req.params;
+    const result = await Task.findByIdAndDelete(taskId);
     if (!result) {
         throw HttpError(404, 'Not found');
     }
-    res.status(200).json({ message: 'contact deleted' });
+    res.status(200).json({ message: 'task deleted' });
 };
-
-// const edit = async (req, res) => {
-//     const { contactId } = req.params;
-//     const body = req.body;
-//     const result = await Contact.findByIdAndUpdate(contactId, body, {
-//         new: true,
-//     });
-//     if (!result) {
-//         throw HttpError(404, 'Not found');
-//     }
-//     res.json(result);
-// };
-
-// const editFavorite = async (req, res) => {
-//     const { contactId } = req.params;
-//     const { favorite } = req.body;
-//     // console.log(favorite);
-//     const result = await Contact.findByIdAndUpdate(
-//         contactId,
-//         {
-//             favorite,
-//         },
-//         { new: true }
-//     );
-//     if (!result) {
-//         throw HttpError(404, 'Not found');
-//     }
-//     res.json(result);
-// };
 
 module.exports = {
     getAll: ctrlWrapper(getAll),
-    getById: ctrlWrapper(getById),
     add: ctrlWrapper(add),
+    edit: ctrlWrapper(edit),
     del: ctrlWrapper(del),
-    // edit: ctrlWrapper(edit),
-    // editFavorite: ctrlWrapper(editFavorite),
 };

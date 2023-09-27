@@ -54,10 +54,6 @@ taskSchema.post('save', handleMongooseError);
 //     .min(1)
 //     .messages({ 'object.min': 'Missing fields' });
 
-// const emptyBodyFavorite = Joi.object()
-//     .min(1)
-//     .messages({ 'object.min': 'Missing field favorite' });
-
 const addShema = Joi.object({
     title: Joi.string().required(),
     start: Joi.string().required().pattern(timeRegexp),
@@ -68,18 +64,22 @@ const addShema = Joi.object({
     date: Joi.string().required().pattern(dateRegexp),
     category: Joi.string()
         .required()
-        .valid(...categoryList),
+        .validate(...categoryList),
 });
 
-// const updateFavoriteShema = Joi.object({
-//     favorite: Joi.boolean().required(),
-// });
+const editShema = Joi.object({
+    title: Joi.string(),
+    start: Joi.string().pattern(timeRegexp),
+    end: Joi.string().pattern(timeRegexp),
+    priority: Joi.string().valid(...priorityList),
+    date: Joi.string().pattern(dateRegexp),
+    category: Joi.string().validate(...categoryList),
+});
 
 const shemas = {
     addShema,
-    //     updateFavoriteShema,
+    editShema,
     //     emptyBody,
-    //     emptyBodyFavorite,
 };
 
 const Task = model('task', taskSchema);

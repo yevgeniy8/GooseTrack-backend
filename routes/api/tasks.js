@@ -9,7 +9,7 @@ router.get('/', ctrl.getAll);
 
 router.post('/', validateBody(shemas.addShema), ctrl.add);
 
-// router.patch('/:tasksId', isValidId, ctrl.getById);
+router.patch('/:tasksId', isValidId, ctrl.edit);
 
 router.delete('/:tasksId', isValidId, ctrl.del);
 
