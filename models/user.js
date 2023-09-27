@@ -11,11 +11,6 @@ const userSchema = new mongoose.Schema(
             required: [true, 'Email is required'],
             unique: true,
         },
-        subscription: {
-            type: String,
-            enum: ['starter', 'pro', 'business'],
-            default: 'starter',
-        },
         token: String,
         avatarURL: String,
         verify: {
@@ -32,4 +27,4 @@ const userSchema = new mongoose.Schema(
 
 const User = mongoose.model('user', userSchema);
 
-module.exports = User;
+module.exports = { User };
