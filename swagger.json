@@ -265,6 +265,77 @@
                 }
             }
         },
+        "/users/profile": {
+            "patch": {
+                "tags": ["Users"],
+                "summary": "Update user's profile",
+                "parameters": [],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Object for update user's profile",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/User"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Successful operations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateProfile"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid request body)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/edit": {
             "patch": {
                 "tags": ["Users"],
@@ -519,6 +590,16 @@
                             }
                         }
                     },
+                    "409": {
+                        "description": "Provided email already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Conflict"
+                                }
+                            }
+                        }
+                    },
                     "500": {
                         "description": "Internal Server Error",
                         "content": {
@@ -676,18 +757,323 @@
                     }
                 }
             }
+        },
+        "/tasks": {
+            "get": {
+                "summary": "Get tasks for month",
+                "tags": ["Tasks"],
+                "parameters": [],
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Successful operations",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/GetAllTasks"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid request body)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create new task",
+                "tags": ["Tasks"],
+                "parameters": [],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Object for add new task",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": { "$ref": "#/components/schemas/Task" }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/AddTask"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid request body)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Forbidden"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Provided email already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Conflict"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/tasks/{id}": {
+            "patch": {
+                "tags": ["Tasks"],
+                "summary": "Update task",
+                "parameters": [],
+                "security": [{ "Bearer": [] }],
+                "requestBody": {
+                    "description": "Object for update current task",
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateTask"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UpdateTask"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid request body)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Forbidden"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "409": {
+                        "description": "Provided email already exists",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Conflict"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete task",
+                "tags": ["Tasks"],
+                "parameters": [],
+                "security": [{ "Bearer": [] }],
+                "responses": {
+                    "200": {
+                        "description": "Deleted",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/DeleteTask"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request (invalid request body)",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/BadRequestResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorised",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Forbidden"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "NotFound",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/NotFound"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ServerError"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "components": {
         "schemas": {
-            "User": {},
-            "CurrentUser": {
+            "User": {
                 "type": "object",
                 "properties": {
                     "name": {
                         "type": "string",
                         "description": "User's name",
-                        "example": "Name"
+                        "example": "Olha"
                     },
                     "email": {
                         "type": "string",
@@ -697,13 +1083,53 @@
                     "avatarUrl": {
                         "type": "string",
                         "description": "User's avatar",
-                        "example": "www.render.com/users/avatar/12345678"
+                        "example": ""
+                    },
+                    "_id": {
+                        "type": "string",
+                        "description": "User's id",
+                        "example": "122fdf6745bc73b2aeccae7n"
+                    },
+                    "verifiedEmail": {
+                        "type": "boolean",
+                        "description": "User's email is verifyed",
+                        "example": "true"
+                    }
+                }
+            },
+            "CurrentUser": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "User's name",
+                        "example": "Olha"
+                    },
+                    "email": {
+                        "type": "string",
+                        "description": "User's email",
+                        "format": "email"
+                    },
+                    "avatarUrl": {
+                        "type": "string",
+                        "description": "User's avatar",
+                        "example": ""
+                    },
+                    "_id": {
+                        "type": "string",
+                        "description": "User's id",
+                        "example": "122fdf6745bc73b2aeccae7n"
+                    },
+                    "verifiedEmail": {
+                        "type": "boolean",
+                        "description": "User's email is verifyed",
+                        "example": "true"
                     }
                 }
             },
             "Reviews": {
                 "type": "object",
-                "required": ["stars", "review", "owner", "avatar"],
+                "required": ["stars", "review", "owner", "avatarUrl"],
                 "properties": {
                     "_id": {
                         "type": "string",
@@ -722,7 +1148,7 @@
                         "description": "Reviewer's name",
                         "example": "Kateryna Hilcher"
                     },
-                    "avatar": {
+                    "avatarUrl": {
                         "type": "string",
                         "description": "Reviewer's avatar",
                         "example": "https://res.cloudinary.com/12345065970"
@@ -734,7 +1160,53 @@
                     }
                 }
             },
-
+            "Task": {
+                "type": "object",
+                "properties": {
+                    "_id": {
+                        "type": "string",
+                        "description": "Task's identifier",
+                        "example": "122fdf6745bc73b2aeccae7n"
+                    },
+                    "title": {
+                        "type": "string",
+                        "description": "Task's title",
+                        "example": "Task №1"
+                    },
+                    "start": {
+                        "type": "string",
+                        "description": "Task's start time",
+                        "example": "00:00"
+                    },
+                    "end": {
+                        "type": "string",
+                        "description": "Task's end time",
+                        "example": "00:00"
+                    },
+                    "priority": {
+                        "type": "string",
+                        "description": "Task's priority",
+                        "enum": ["low", "medium", "high"],
+                        "example": "low"
+                    },
+                    "date": {
+                        "type": "string",
+                        "description": "Task's date",
+                        "example": "YYYY-MM-DD"
+                    },
+                    "category": {
+                        "type": "string",
+                        "description": "Task's category",
+                        "enum": ["to-do", "in-progress", "done"],
+                        "example": "to-do"
+                    },
+                    "owner": {
+                        "type": "string",
+                        "description": "User who created current task",
+                        "example": "122fdf6745bc73b2aeccae7n"
+                    }
+                }
+            },
             "RegistrationRequest": {
                 "type": "object",
                 "required": ["name", "email", "password"],
@@ -815,6 +1287,31 @@
                     }
                 }
             },
+            "UpdateProfile": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "profile updated successfully"
+                    },
+                    "user": {
+                        "type": "object",
+                        "items": {
+                            "$ref": "#/components/schemas/User"
+                        },
+                        "example": {
+                            "_id": "64d3912245021a7e4d683bc4",
+                            "rating": 3,
+                            "comment": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
+                            "owner": {
+                                "_id": "122fdf6745bc73b2aeccae7n",
+                                "name": "Kateryna Hilcher",
+                                "avatarUrl": "https://res.cloudinary.com/12345065970"
+                            }
+                        }
+                    }
+                }
+            },
             "GetAllReviews": {
                 "type": "object",
                 "properties": {
@@ -831,7 +1328,7 @@
                                 "owner": {
                                     "_id": "122fdf6745bc73b2aeccae7n",
                                     "name": "Kateryna Hilcher",
-                                    "avatar": "https://res.cloudinary.com/12345065970"
+                                    "avatarUrl": "https://res.cloudinary.com/12345065970"
                                 }
                             }
                         ]
@@ -853,7 +1350,7 @@
                             "owner": {
                                 "_id": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
-                                "avatar": "https://res.cloudinary.com/12345065970"
+                                "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
                         }
                     }
@@ -878,7 +1375,7 @@
                             "owner": {
                                 "_id": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
-                                "avatar": "https://res.cloudinary.com/12345065970"
+                                "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
                         }
                     }
@@ -903,7 +1400,7 @@
                             "owner": {
                                 "_id": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
-                                "avatar": "https://res.cloudinary.com/12345065970"
+                                "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
                         }
                     }
@@ -915,6 +1412,98 @@
                     "message": {
                         "type": "string",
                         "example": "Review was deleted successfully"
+                    }
+                }
+            },
+            "GetAllTasks": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Get all tasks for the current month or day"
+                    },
+                    "tasks": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Task" },
+                        "example": [
+                            {
+                                "_id": "122fdf6745bc73b2aeccae7n",
+                                "title": "Meet",
+                                "start": "12:30",
+                                "end": "14:00",
+                                "priority": "medium",
+                                "date": "2023-09-29",
+                                "category": "to-do",
+                                "owner": "122fdf6745bc73b2aeccae7m"
+                            }
+                        ]
+                    }
+                }
+            },
+            "AddTask": {
+                "type": "object",
+                "required": [
+                    "title",
+                    "start",
+                    "end",
+                    "date",
+                    "priority",
+                    "category"
+                ],
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Task added successfully"
+                    },
+                    "tasks": {
+                        "type": "object",
+                        "items": {
+                            "$ref": "#/components/schemas/Task"
+                        },
+                        "example": {
+                            "_id": "122fdf6745bc73b2aeccae7n",
+                            "title": "Meet",
+                            "start": "12:30",
+                            "end": "14:00",
+                            "priority": "medium",
+                            "date": "2023-09-29",
+                            "category": "to-do",
+                            "owner": "122fdf6745bc73b2aeccae7m"
+                        }
+                    }
+                }
+            },
+            "UpdateTask": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Task added successfully"
+                    },
+                    "tasks": {
+                        "type": "object",
+                        "items": {
+                            "$ref": "#/components/schemas/Task"
+                        },
+                        "example": {
+                            "_id": "122fdf6745bc73b2aeccae7n",
+                            "title": "Meet",
+                            "start": "12:30",
+                            "end": "14:00",
+                            "priority": "medium",
+                            "date": "2023-09-29",
+                            "category": "to-do",
+                            "owner": "122fdf6745bc73b2aeccae7m"
+                        }
+                    }
+                }
+            },
+            "DeleteTask": {
+                "type": "object",
+                "properties": {
+                    "message": {
+                        "type": "string",
+                        "example": "Task deleted successfully"
                     }
                 }
             },
