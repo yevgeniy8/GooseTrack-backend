@@ -7,6 +7,8 @@ const swaggerDocument = require('./swagger.json');
 
 const routes = require('./routes/api');
 
+require('dotenv').config();
+
 const app = express();
 
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short';
@@ -19,6 +21,7 @@ app.use(express.static('public'));
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use('/api', routes);
+app.use('/', routes);
 
 app.use((req, res) => {
     res.status(404).json({ message: 'Not found' });
