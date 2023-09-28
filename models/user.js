@@ -9,10 +9,12 @@ const userSchema = new Schema(
     {
         name: {
             type: String,
+            minlength: 2,
             required: [true, 'Set name for user'],
         },
         password: {
             type: String,
+            minlength: 6,
             required: [true, 'Set password for user'],
         },
         email: {
@@ -20,8 +22,24 @@ const userSchema = new Schema(
             required: [true, 'Email is required'],
             unique: true,
         },
+        skype: {
+            type: String,
+            default: '',
+        },
+        phone: {
+            type: String,
+            default: '',
+        },
+        birthday: {
+            type: Date,
+            min: '1920-01-01',
+            default: '',
+        },
+        avatarURL: {
+            type: String,
+            default: '',
+        },
         token: String,
-        avatarURL: { type: String },
         verify: {
             type: Boolean,
             default: false,
@@ -65,18 +83,28 @@ const emptyBody = Joi.object()
     .min(1)
     .messages({ 'object.min': 'Missing fields' });
 
-const emailSchema = Joi.object({
-    email: Joi.string()
-        .pattern(emailRegexp)
-        .required()
-        .messages({ 'any.required': 'missing required email field' }),
+// const emailSchema = Joi.object({
+//     email: Joi.string()
+//         .pattern(emailRegexp)
+//         .required()
+//         .messages({ 'any.required': 'missing required email field' }),
+// });
+
+const editUserSchema = Joi.object({
+    name: Joi.string().min(2),
+    birthday: Joi.date().allow('', null),
+    email: Joi.string().pattern(emailRegexp).required(),
+    phone: Joi.string().allow('', null),
+    skype: Joi.string().allow('', null),
+    avatarURL: Joi.string().allow('', null),
 });
 
 const schemas = {
     usersSchemaRegister,
     usersSchemaLogin,
     emptyBody,
-    emailSchema,
+    // emailSchema,
+    editUserSchema,
 };
 
 const User = model('user', userSchema);

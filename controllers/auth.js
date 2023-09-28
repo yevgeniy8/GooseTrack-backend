@@ -28,6 +28,14 @@ const register = async (req, res) => {
         verificationToken,
     });
 
+    //      const verifyEmail = {
+    //     to: email,
+    //     subject: "Verify email",
+    //     html: `<a href="${BASE_URL}/users/verify/${verificationToken}" target="_blank">Click verify email</a>`,
+    //   };
+
+    //   await sendEmail(verifyEmail);
+
     res.status(201).json({
         user: { email: newUser.email, name: newUser.name },
     });
@@ -72,6 +80,23 @@ const getCurrent = async (req, res) => {
     });
 };
 
+const editUser = async (req, res) => {
+    const { name, birthday, phone, skype, email } = req.body;
+    const { _id } = req.user;
+
+    const userData = { name, birthday, phone, skype, email };
+
+    const newUser = await User.findByIdAndUpdate(_id, userData, {
+        new: true,
+    });
+    if (!newUser) throw HttpError(500, 'Failed');
+
+    res.status(200).json({
+        message: 'Profile updated.',
+        user: { _id, ...userData },
+    });
+};
+
 const logout = async (req, res) => {
     const { _id } = req.user;
     await User.findByIdAndUpdate(_id, { token: '' });
@@ -84,4 +109,5 @@ module.exports = {
     login: ctrlWrapper(login),
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
+    editUser: ctrlWrapper(editUser),
 };
