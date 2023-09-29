@@ -93,7 +93,7 @@ const emptyBody = Joi.object()
 const editUserSchema = Joi.object({
     name: Joi.string().min(2),
     birthday: Joi.date().allow('', null),
-    email: Joi.string().pattern(emailRegexp).required(),
+    email: Joi.string().pattern(emailRegexp),
     phone: Joi.string().allow('', null),
     skype: Joi.string().allow('', null),
     avatarURL: Joi.string().allow('', null),
