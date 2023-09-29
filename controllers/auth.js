@@ -1,12 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const path = require('path');
-// const fs = require('fs/promises');
-// const Jimp = require('jimp');
-// const gravatar = require('gravatar');
 const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
-const { HttpError, ctrlWrapper } = require('../helpers');
+const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
 
 const { JWT_SECRET } = process.env;
 
@@ -81,20 +77,39 @@ const getCurrent = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-    const { name, birthday, phone, skype, email } = req.body;
+    const { body, file } = req;
+    const { name, birthday, phone, skype, email, avatarURL, token } = body;
     const { _id } = req.user;
 
-    const userData = { name, birthday, phone, skype, email };
+    const userData = { name, birthday, phone, skype, email, avatarURL, token };
+
+    if (file) {
+        const { avatarURL } = await cloudinaryForImage(req);
+        body.avatarURL = avatarURL;
+    } else {
+        body.avatarURL = body.avatar;
+    }
 
     const newUser = await User.findByIdAndUpdate(_id, userData, {
         new: true,
     });
     if (!newUser) throw HttpError(500, 'Failed');
-
-    res.status(200).json({
-        message: 'Profile updated.',
-        user: { _id, ...userData },
-    });
+    if (newUser) {
+        const { name, email, birthday, phone, skype, avatarURL, token } =
+            newUser;
+        return res.status(200).json({
+            message: 'Updated successfully',
+            newUser: {
+                name,
+                email,
+                birthday,
+                phone,
+                skype,
+                avatarURL,
+                token,
+            },
+        });
+    }
 };
 
 const logout = async (req, res) => {
