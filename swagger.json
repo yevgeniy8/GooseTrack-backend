@@ -7,7 +7,7 @@
     },
     "consumes": ["application/json"],
     "produces": ["application/json"],
-    "servers": [{ "url": "http://localhost:8000" }],
+    "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],
     "tags": [
         {
             "name": "Users",
