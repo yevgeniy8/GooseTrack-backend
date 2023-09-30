@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
 const {
@@ -18,10 +18,12 @@ const register = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     const verificationToken = nanoid();
+    const avatarURL = '../public/defoult.png';
 
     const newUser = await User.create({
         ...req.body,
         password: hashPassword,
+        avatarURL,
         verificationToken,
     });
 
