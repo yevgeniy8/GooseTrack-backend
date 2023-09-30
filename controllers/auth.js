@@ -2,9 +2,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
-const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
-
-const { JWT_SECRET } = process.env;
+const {
+    HttpError,
+    ctrlWrapper,
+    cloudinaryForImage,
+    assignToken,
+} = require('../helpers');
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -14,13 +17,11 @@ const register = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    // const avatarURL = gravatar.url(email);
     const verificationToken = nanoid();
 
     const newUser = await User.create({
         ...req.body,
         password: hashPassword,
-
         verificationToken,
     });
 
@@ -54,25 +55,25 @@ const login = async (req, res) => {
         throw HttpError(401, 'Email or password is wrong');
     }
 
-    const payload = {
-        id: user._id,
-    };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '23h' });
-
-    await User.findByIdAndUpdate(user._id, { token });
-
+    const { accessToken, refreshToken } = assignToken(user);
+    await User.findByIdAndUpdate(user._id, { refreshToken });
     res.status(200).json({
-        token,
+        accessToken,
         user: { email: user.email, name: user.name },
     });
 };
 
 const getCurrent = async (req, res) => {
-    const { email, name } = req.user;
+    const { email, name, birthday, phone, skype, avatarURL, token } = req.user;
 
     res.json({
         email,
         name,
+        birthday,
+        phone,
+        skype,
+        avatarURL,
+        token,
     });
 };
 
@@ -126,3 +127,5 @@ module.exports = {
     logout: ctrlWrapper(logout),
     editUser: ctrlWrapper(editUser),
 };
+
+// "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],

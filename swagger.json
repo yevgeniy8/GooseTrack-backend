@@ -7,6 +7,7 @@
     },
     "consumes": ["application/json"],
     "produces": ["application/json"],
+
     "servers": [{ "url": "http://localhost:8000" }],
     "tags": [
         {
@@ -1136,17 +1137,22 @@
                         "example": "122fdf6745bc73b2aeccae7n",
                         "description": "Review's identifier"
                     },
-                    "stars": {
+                    "rating": {
                         "type": "number",
                         "description": "Number of stars",
                         "min": 1,
                         "max": 5,
                         "example": 3
                     },
-                    "owner": {
+                    "name": {
                         "type": "string",
                         "description": "Reviewer's name",
                         "example": "Kateryna Hilcher"
+                    },
+                    "owner": {
+                        "type": "string",
+                        "example": "122fdf6745bc73b2aeccae7n",
+                        "description": "User's identifier"
                     },
                     "avatarUrl": {
                         "type": "string",
