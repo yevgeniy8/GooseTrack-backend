@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const { User } = require('../models/user');
 const { HttpError, assignToken } = require('../helpers');
+const { TokenExpiredError } = require('jsonwebtoken');
 
 const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
 

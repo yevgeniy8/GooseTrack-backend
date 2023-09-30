@@ -14,7 +14,7 @@ const assignToken = user => {
         email: user.email,
     };
     const accessToken = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: '5m',
+        expiresIn: '30m',
     });
     const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
         expiresIn: '24h',
