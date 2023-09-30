@@ -1,29 +1,35 @@
 const { Review } = require('../models/reviews');
+const { HttpError } = require('../helpers/HttpError');
 
 const getAllReviewsService = async () => {
     return await Review.find().exec();
 };
 
 const getReviewByOwnerService = async ownerId => {
-    return await Review.findOne({ owner: ownerId }).exec();
+    const review = await Review.findOne({ 'user.owner': ownerId }).exec();
+
+    if (!review) {
+        throw new HttpError(404, 'Review not found');
+    }
+    return review;
 };
 
 const createReviewService = async (
     { review, rating, name, avatarURL },
     ownerId
 ) => {
-    const existingReview = await Review.findOne({ owner: ownerId }).exec();
+    const existingReview = await Review.findOne({
+        'user.owner': ownerId,
+    }).exec();
 
     if (existingReview) {
-        throw new Error('User can only create one review');
+        throw HttpError(409, 'User can only create one review');
     }
 
     const newReview = await Review.create({
         review,
         rating,
-        owner: ownerId,
-        name,
-        avatarURL,
+        user: { owner: ownerId, name, avatarURL }, // Создаем объект user с вложенными полями
     });
 
     return newReview;
@@ -33,7 +39,7 @@ const updateReviewService = async (ownerId, body) => {
     const { review, rating } = body;
 
     const updatedReview = await Review.findOneAndUpdate(
-        { owner: ownerId },
+        { 'user.owner': ownerId },
         { $set: { review, rating } },
         { new: true }
     );
@@ -43,11 +49,11 @@ const updateReviewService = async (ownerId, body) => {
 
 const deleteReviewService = async ownerId => {
     const deletedReview = await Review.findOneAndRemove({
-        owner: ownerId,
+        'user.owner': ownerId,
     });
 
     if (!deletedReview) {
-        throw new Error('Review not found');
+        throw new HttpError(404, 'Review not found');
     }
 
     return deletedReview;

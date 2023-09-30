@@ -8,6 +8,11 @@ const {
 
 const ctrlWrapper = require('../helpers/ctrlWrapper');
 
+const {
+    addReviewValidationSchema,
+    updateReviewValidationSchema,
+} = require('../schema/validation/reviewValidationSchema');
+
 const getAllReviews = ctrlWrapper(async (req, res, next) => {
     const reviews = await getAllReviewsService();
     res.json({ reviews });
@@ -25,6 +30,11 @@ const getReviewByOwner = ctrlWrapper(async (req, res, next) => {
 });
 
 const createReview = ctrlWrapper(async (req, res, next) => {
+    const { error } = addReviewValidationSchema.validate(req.body);
+
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
     const { review, rating } = req.body;
     const { id, name, avatarURL } = req.user;
     const newReviewData = { review, rating, name, avatarURL };
@@ -33,6 +43,11 @@ const createReview = ctrlWrapper(async (req, res, next) => {
 });
 
 const updateReview = ctrlWrapper(async (req, res, next) => {
+    const { error } = updateReviewValidationSchema.validate(req.body);
+
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
     const { review, rating } = req.body;
     const ownerId = req.user.id;
 

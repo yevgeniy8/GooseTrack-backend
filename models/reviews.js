@@ -11,17 +11,19 @@ const reviewSchema = new mongoose.Schema({
         min: 1,
         max: 5,
     },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true,
-    },
-    name: {
-        type: String,
-        required: true,
-    },
-    avatarURL: {
-        type: String,
+    user: {
+        owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+        name: {
+            type: String,
+            required: true,
+        },
+        avatarURL: {
+            type: String,
+        },
     },
 });
 
