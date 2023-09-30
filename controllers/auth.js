@@ -2,9 +2,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
-const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
-
-const { JWT_SECRET } = process.env;
+const {
+    HttpError,
+    ctrlWrapper,
+    cloudinaryForImage,
+    assignToken,
+} = require('../helpers');
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -52,15 +55,10 @@ const login = async (req, res) => {
         throw HttpError(401, 'Email or password is wrong');
     }
 
-    const payload = {
-        id: user._id,
-    };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '23h' });
-
-    await User.findByIdAndUpdate(user._id, { token });
-
+    const { accessToken, refreshToken } = assignToken(user);
+    await User.findByIdAndUpdate(user._id, { refreshToken });
     res.status(200).json({
-        token,
+        accessToken,
         user: { email: user.email, name: user.name },
     });
 };
@@ -129,3 +127,5 @@ module.exports = {
     logout: ctrlWrapper(logout),
     editUser: ctrlWrapper(editUser),
 };
+
+// "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],
