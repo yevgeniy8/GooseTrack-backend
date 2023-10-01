@@ -64,7 +64,7 @@ const addShema = Joi.object({
     date: Joi.string().required().pattern(dateRegexp),
     category: Joi.string()
         .required()
-        .validate(...categoryList),
+        .valid(...categoryList),
 });
 
 const editShema = Joi.object({
