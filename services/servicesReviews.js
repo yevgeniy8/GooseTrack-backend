@@ -1,5 +1,5 @@
 const { Review } = require('../models/reviews');
-const { HttpError } = require('../helpers/HttpError');
+const { HttpError } = require('../helpers');
 
 const getAllReviewsService = async () => {
     return await Review.find().exec();
