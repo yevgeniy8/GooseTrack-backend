@@ -6,7 +6,7 @@ const {
     deleteReviewService,
 } = require('../services/servicesReviews');
 
-const ctrlWrapper = require('../helpers/ctrlWrapper');
+const { ctrlWrapper } = require('../helpers');
 
 const {
     addReviewValidationSchema,
