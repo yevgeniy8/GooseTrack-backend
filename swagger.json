@@ -8,7 +8,7 @@
     "consumes": ["application/json"],
     "produces": ["application/json"],
 
-    "servers": [{ "url": "http://localhost:8000" }],
+    "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],
     "tags": [
         {
             "name": "Users",
@@ -629,7 +629,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Created",
+                        "description": "Successful operations",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -1130,7 +1130,7 @@
             },
             "Reviews": {
                 "type": "object",
-                "required": ["stars", "review", "owner", "avatarUrl"],
+                "required": ["rating", "review", "owner", "avatarUrl"],
                 "properties": {
                     "_id": {
                         "type": "string",
@@ -1344,7 +1344,7 @@
             "GetReviewsByCurrent": {
                 "type": "object",
                 "properties": {
-                    "reviews": {
+                    "review": {
                         "type": "object",
                         "items": {
                             "$ref": "#/components/schemas/Reviews"
@@ -1352,9 +1352,9 @@
                         "example": {
                             "_id": "64d3912245021a7e4d683bc4",
                             "rating": 3,
-                            "comment": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
-                            "owner": {
-                                "_id": "122fdf6745bc73b2aeccae7n",
+                            "review": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
+                            "user": {
+                                "owner": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
                                 "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
@@ -1369,7 +1369,7 @@
                         "type": "string",
                         "example": "Review added successfully"
                     },
-                    "reviews": {
+                    "review": {
                         "type": "object",
                         "items": {
                             "$ref": "#/components/schemas/Reviews"
@@ -1377,9 +1377,9 @@
                         "example": {
                             "_id": "64d3912245021a7e4d683bc4",
                             "rating": 3,
-                            "comment": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
-                            "owner": {
-                                "_id": "122fdf6745bc73b2aeccae7n",
+                            "review": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
+                            "user": {
+                                "owner": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
                                 "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
@@ -1394,7 +1394,7 @@
                         "type": "string",
                         "example": "Review edited successfully"
                     },
-                    "reviews": {
+                    "review": {
                         "type": "object",
                         "items": {
                             "$ref": "#/components/schemas/Reviews"
@@ -1402,9 +1402,9 @@
                         "example": {
                             "_id": "64d3912245021a7e4d683bc4",
                             "rating": 3,
-                            "comment": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
-                            "owner": {
-                                "_id": "122fdf6745bc73b2aeccae7n",
+                            "review": "Really helps to plan the day and visualize tasks. Exactly what I was looking for. Huge thanks to the developers!",
+                            "user": {
+                                "owner": "122fdf6745bc73b2aeccae7n",
                                 "name": "Kateryna Hilcher",
                                 "avatarUrl": "https://res.cloudinary.com/12345065970"
                             }
