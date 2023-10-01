@@ -39,7 +39,7 @@ const userSchema = new Schema(
             type: String,
             default: '',
         },
-        // token: String,
+        token: String,
         refreshToken: String,
         verify: {
             type: Boolean,
