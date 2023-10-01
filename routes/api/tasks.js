@@ -1,16 +1,16 @@
 const express = require('express');
 const ctrl = require('../../controllers/tasks');
-const { isValidId, validateBody } = require('../../middlewares');
+const { isValidId, validateBody, auth } = require('../../middlewares');
 const { shemas } = require('../../models/task');
 
 const router = express.Router();
 
-router.get('/', ctrl.getAll);
+router.get('/', auth, ctrl.getAll);
 
-router.post('/', validateBody(shemas.addShema), ctrl.add);
+router.post('/', auth, validateBody(shemas.addShema), ctrl.add);
 
-router.patch('/:tasksId', isValidId, ctrl.edit);
+router.patch('/:tasksId', auth, isValidId, ctrl.edit);
 
-router.delete('/:tasksId', isValidId, ctrl.del);
+router.delete('/:tasksId', auth, isValidId, ctrl.del);
 
 module.exports = router;
