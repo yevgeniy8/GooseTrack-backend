@@ -39,7 +39,7 @@ const auth = async (req, res, next) => {
 
             await User.findByIdAndUpdate(fetchUser._id, { refreshToken });
 
-            res.json({ accessToken });
+            res.json({ accessToken, ...fetchUser });
         } catch (error) {
             return next(new HttpError(401, 'Refresh token is expired'));
         }
