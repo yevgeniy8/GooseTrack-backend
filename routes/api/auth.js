@@ -4,19 +4,19 @@ const router = express.Router();
 
 const ctrl = require('../../controllers/auth');
 
-const { validateBody, auth } = require('../../middlewares');
+const { validateBody, auth, passport } = require('../../middlewares');
 
 const { schemas } = require('../../models/user');
 
-// router.get(
-//     '/google',
-//     passport.authenticate('google', { scope: ['email', 'profile'] })
-// );
-// router.get(
-//     '/google/callback',
-//     passport.authenticate('google', { session: false }),
-//     ctrl.authGoogle
-// );
+router.get(
+    '/google',
+    passport.authenticate('google', { scope: ['email', 'profile'] })
+);
+router.get(
+    '/google/callback',
+    passport.authenticate('google', { session: false }),
+    ctrl.authGoogle
+);
 
 router.post(
     '/register',

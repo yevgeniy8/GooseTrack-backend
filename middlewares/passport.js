@@ -9,11 +9,17 @@ const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, BASE_URL } = process.env;
 const googleParams = {
     clientID: GOOGLE_CLIENT_ID,
     clientSecret: GOOGLE_CLIENT_SECRET,
-    callbackURL: `${BASE_URL}/api/users/google/callback`,
+    callbackURL: `${BASE_URL}/auth/google/callback`,
     passReqToCallback: true,
 };
 
-const googleCallback = async (profile, done) => {
+const googleCallback = async (
+    request,
+    accessToken,
+    refreshToken,
+    profile,
+    done
+) => {
     try {
         const { email, displayName, picture } = profile;
         const user = await User.findOne({ email });
