@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
-const { nanoid } = require('nanoid');
+const jwt = require('jsonwebtoken');
+// const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
 const {
     HttpError,
@@ -8,24 +8,24 @@ const {
     cloudinaryForImage,
     assignToken,
 } = require('../helpers');
-// const { JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL } = process.env;
+const { JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL } = process.env;
 
-// const authGoogle = async (req, res) => {
-//     const { _id: id } = req.user;
-//     const accessToken = jwt.sign({ id }, JWT_SECRET, { expiresIn: '5h' });
-//     const refreshToken = jwt.sign({ id }, JWT_REFRESH_SECRET, {
-//         expiresIn: '1d',
-//     });
-//     const newUser = await User.findByIdAndUpdate(id, {
-//         accessToken,
-//         refreshToken,
-//     });
-//     if (!newUser) throw HttpError(500, 'Failed to log in.');
+const authGoogle = async (req, res) => {
+    const { _id: id } = req.user;
+    const accessToken = jwt.sign({ id }, JWT_SECRET, { expiresIn: '10m' });
+    const refreshToken = jwt.sign({ id }, JWT_REFRESH_SECRET, {
+        expiresIn: '24h',
+    });
+    const newUser = await User.findByIdAndUpdate(id, {
+        accessToken,
+        refreshToken,
+    });
+    if (!newUser) throw HttpError(500, 'Failed to log in.');
 
-//     res.redirect(
-//         `${FRONTEND_URL}/login/google?token=${accessToken}&refreshToken=${refreshToken}`
-//     );
-// };
+    res.redirect(
+        `${FRONTEND_URL}/auth/google?token=${accessToken}&refreshToken=${refreshToken}`
+    );
+};
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -35,14 +35,14 @@ const register = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    const verificationToken = nanoid();
+    // const verificationToken = nanoid();
     const avatarURL = '../public/defoult.png';
 
     const newUser = await User.create({
         ...req.body,
         password: hashPassword,
         avatarURL,
-        verificationToken,
+        // verificationToken,
     });
 
     //      const verifyEmail = {
@@ -146,7 +146,5 @@ module.exports = {
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
     editUser: ctrlWrapper(editUser),
-    // authGoogle: ctrlWrapper(authGoogle),
+    authGoogle: ctrlWrapper(authGoogle),
 };
-
-// "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],
