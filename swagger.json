@@ -7,8 +7,8 @@
     },
     "consumes": ["application/json"],
     "produces": ["application/json"],
-
     "servers": [{ "url": "https://goose-track-backend-q3re.onrender.com" }],
+
     "tags": [
         {
             "name": "Users",
@@ -910,7 +910,13 @@
             "patch": {
                 "tags": ["Tasks"],
                 "summary": "Update task",
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Task's identifier"
+                    }
+                ],
                 "security": [{ "Bearer": [] }],
                 "requestBody": {
                     "description": "Object for update current task",
@@ -918,7 +924,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "$ref": "#/components/schemas/UpdateTask"
+                                "$ref": "#/components/schemas/Task"
                             }
                         }
                     }
@@ -999,7 +1005,13 @@
             "delete": {
                 "summary": "Delete task",
                 "tags": ["Tasks"],
-                "parameters": [],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Task's identifier"
+                    }
+                ],
                 "security": [{ "Bearer": [] }],
                 "responses": {
                     "200": {
@@ -1169,11 +1181,6 @@
             "Task": {
                 "type": "object",
                 "properties": {
-                    "_id": {
-                        "type": "string",
-                        "description": "Task's identifier",
-                        "example": "122fdf6745bc73b2aeccae7n"
-                    },
                     "title": {
                         "type": "string",
                         "description": "Task's title",
@@ -1205,11 +1212,6 @@
                         "description": "Task's category",
                         "enum": ["to-do", "in-progress", "done"],
                         "example": "to-do"
-                    },
-                    "owner": {
-                        "type": "string",
-                        "description": "User who created current task",
-                        "example": "122fdf6745bc73b2aeccae7n"
                     }
                 }
             },
@@ -1424,10 +1426,6 @@
             "GetAllTasks": {
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string",
-                        "example": "Get all tasks for the current month or day"
-                    },
                     "tasks": {
                         "type": "array",
                         "items": { "$ref": "#/components/schemas/Task" },
@@ -1457,10 +1455,6 @@
                     "category"
                 ],
                 "properties": {
-                    "message": {
-                        "type": "string",
-                        "example": "Task added successfully"
-                    },
                     "tasks": {
                         "type": "object",
                         "items": {
@@ -1482,10 +1476,6 @@
             "UpdateTask": {
                 "type": "object",
                 "properties": {
-                    "message": {
-                        "type": "string",
-                        "example": "Task added successfully"
-                    },
                     "tasks": {
                         "type": "object",
                         "items": {
