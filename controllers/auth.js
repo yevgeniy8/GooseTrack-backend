@@ -106,11 +106,12 @@ const getCurrent = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-    const { body, file } = req;
-    const { name, birthday, phone, skype, email, avatarURL, token } = body;
-    const { _id } = req.user;
+    // const { body, file } = req;
+    const { body, file, user } = req;
+    // const { name, birthday, phone, skype, email, avatarURL, token } = body;
+    // const { _id } = req.user;
 
-    const userData = { name, birthday, phone, skype, email, avatarURL, token };
+    // const userData = { name, birthday, phone, skype, email, avatarURL, token };
 
     if (file) {
         const { avatarURL } = await cloudinaryForImage(req);
@@ -119,9 +120,15 @@ const editUser = async (req, res) => {
         body.avatarURL = body.avatar;
     }
 
-    const newUser = await User.findByIdAndUpdate(_id, userData, {
-        new: true,
-    });
+    const newUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+            $set: body,
+        },
+        {
+            new: true,
+        }
+    );
     if (!newUser) throw HttpError(500, 'Failed');
     if (newUser) {
         const { name, email, birthday, phone, skype, avatarURL, token } =
