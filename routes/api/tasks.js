@@ -9,8 +9,8 @@ router.get('/', auth, ctrl.getAll);
 
 router.post('/', auth, validateBody(shemas.addShema), ctrl.add);
 
-router.patch('/:tasksId', auth, isValidId, ctrl.edit);
+router.patch('/:id', auth, isValidId, ctrl.edit);
 
-router.delete('/:tasksId', auth, isValidId, ctrl.del);
+router.delete('/:id', auth, isValidId, ctrl.del);
 
 module.exports = router;
