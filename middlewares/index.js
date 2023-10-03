@@ -9,5 +9,5 @@ module.exports = {
     validateBody,
     auth,
     upload,
-    passport,
+    // passport,
 };

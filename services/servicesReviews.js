@@ -9,7 +9,7 @@ const getReviewByOwnerService = async ownerId => {
     const review = await Review.findOne({ 'user.owner': ownerId }).exec();
 
     if (!review) {
-        throw new HttpError(404, 'Review not found');
+        throw HttpError(404, 'Review not found');
     }
     return review;
 };
@@ -53,7 +53,7 @@ const deleteReviewService = async ownerId => {
     });
 
     if (!deletedReview) {
-        throw new HttpError(404, 'Review not found');
+        throw HttpError(404, 'Review not found');
     }
 
     return deletedReview;

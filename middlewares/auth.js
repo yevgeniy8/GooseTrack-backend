@@ -10,7 +10,7 @@ const auth = async (req, res, next) => {
     const [bearer, token] = authorization.split(' ');
 
     if (bearer !== 'Bearer' || !token) {
-        return next(new HttpError(401, 'Unauthorized. No token'));
+        return next(HttpError(401, 'Unauthorized. No token'));
     }
 
     const payload = jwt.decode(token);
@@ -19,7 +19,7 @@ const auth = async (req, res, next) => {
     try {
         fetchUser = await User.findOne({ _id: payload.id });
         if (!fetchUser || !fetchUser.refreshToken) {
-            return next(new HttpError(401, 'Unauthorized. User not found'));
+            return next(HttpError(401, 'Unauthorized. User not found'));
         }
 
         jwt.verify(token, JWT_SECRET);
@@ -29,7 +29,7 @@ const auth = async (req, res, next) => {
         next();
     } catch (error) {
         if (!(error instanceof TokenExpiredError)) {
-            return next(new HttpError(401, 'Unauthorized. Invalid token'));
+            return next(HttpError(401, 'Unauthorized. Invalid token'));
         }
 
         try {
@@ -51,7 +51,7 @@ const auth = async (req, res, next) => {
                 avatarURL,
             });
         } catch (error) {
-            return next(new HttpError(401, 'Refresh token is expired'));
+            return next(HttpError(401, 'Refresh token is expired'));
         }
     }
     // const { authorization = '' } = req.headers;
