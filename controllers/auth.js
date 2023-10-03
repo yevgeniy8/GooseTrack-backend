@@ -45,18 +45,18 @@ const register = async (req, res) => {
         // verificationToken,
     });
 
-    const payload = {
-        id: newUser._id,
-        email: newUser.email,
-    };
-    const accessToken = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: '1m',
-    });
-    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
-        expiresIn: '24h',
-    });
+    // const payload = {
+    //     id: newUser._id,
+    //     email: newUser.email,
+    // };
+    // const accessToken = jwt.sign(payload, JWT_SECRET, {
+    //     expiresIn: '1m',
+    // });
+    // const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
+    //     expiresIn: '24h',
+    // });
 
-    await User.findByIdAndUpdate(newUser._id, { refreshToken });
+    // await User.findByIdAndUpdate(newUser._id, { refreshToken });
 
     //      const verifyEmail = {
     //     to: email,
@@ -67,7 +67,6 @@ const register = async (req, res) => {
     //   await sendEmail(verifyEmail);
 
     res.status(201).json({
-        accessToken,
         user: { email: newUser.email, name: newUser.name },
     });
 };
