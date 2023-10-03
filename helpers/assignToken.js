@@ -1,22 +1,22 @@
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 
-const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
+// const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
 
-const assignToken = user => {
-    const payload = {
-        id: user._id,
-        email: user.email,
-    };
-    const accessToken = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: '24h',
-    });
-    const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
-        expiresIn: '24h',
-    });
-    return {
-        accessToken,
-        refreshToken,
-    };
-};
+// const assignToken = user => {
+//     const payload = {
+//         id: user._id,
+//         email: user.email,
+//     };
+//     const accessToken = jwt.sign(payload, JWT_SECRET, {
+//         expiresIn: '24h',
+//     });
+//     const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
+//         expiresIn: '24h',
+//     });
+//     return {
+//         accessToken,
+//         refreshToken,
+//     };
+// };
 
-module.exports = assignToken;
+// module.exports = assignToken;

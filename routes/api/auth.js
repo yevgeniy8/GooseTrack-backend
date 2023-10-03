@@ -35,7 +35,3 @@ router.post(
 router.post('/logout', auth, ctrl.logout);
 
 module.exports = router;
-
-// const baseURL = 'https://goose-track-backend-q3re.onrender.com';
-
-// <a href={`${baseURL}/users/google`}>Google</a>
