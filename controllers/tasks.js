@@ -20,9 +20,9 @@ const add = async (req, res) => {
 };
 
 const edit = async (req, res) => {
-    const { taskId } = req.params;
+    const { id } = req.params;
     const body = req.body;
-    const result = await Task.findByIdAndUpdate(taskId, body, {
+    const result = await Task.findByIdAndUpdate(id, body, {
         new: true,
     });
     if (!result) {
@@ -32,8 +32,8 @@ const edit = async (req, res) => {
 };
 
 const del = async (req, res) => {
-    const { taskId } = req.params;
-    const result = await Task.findByIdAndDelete(taskId);
+    const { id } = req.params;
+    const result = await Task.findByIdAndDelete(id);
     if (!result) {
         throw HttpError(404, 'Not found');
     }
