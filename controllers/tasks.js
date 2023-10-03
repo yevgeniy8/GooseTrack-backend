@@ -4,10 +4,7 @@ const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getAll = async (req, res, next) => {
     const owner = req.user._id;
-    // const result = await Task.find(owner, '-createdAt -updatedAt').populate(
-    //     'owner'
-    // );
-    const result = await Task.find(owner, '-createdAt -updatedAt');
+    const result = await Task.find({ owner }, '-createdAt -updatedAt');
 
     res.json(result);
 };

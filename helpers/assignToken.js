@@ -8,7 +8,7 @@ const assignToken = user => {
         email: user.email,
     };
     const accessToken = jwt.sign(payload, JWT_SECRET, {
-        expiresIn: '1m',
+        expiresIn: '24h',
     });
     const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
         expiresIn: '24h',
