@@ -4,19 +4,28 @@ const router = express.Router();
 
 const ctrl = require('../../controllers/auth');
 
-const { validateBody, auth, passport } = require('../../middlewares');
+const { validateBody, auth } = require('../../middlewares');
 
 const { schemas } = require('../../models/user');
 
-router.get(
-    '/google',
-    passport.authenticate('google', { scope: ['email', 'profile'] })
-);
-router.get(
-    '/google/callback',
-    passport.authenticate('google', { session: false }),
-    ctrl.authGoogle
-);
+// router.get(
+//     '/google',
+//     passport.authenticate('google', { scope: ['email', 'profile'] })
+// );
+// router.get(
+//     '/google/callback',
+//     passport.authenticate('google', { session: false }),
+//     ctrl.authGoogle
+// );
+
+// const { Router } = require('express');
+// const tryCatchWrapper = require('../helpers/try-catch-wrapper');
+// const { googleAuth, googleRedirect } = require('./auth.controller');
+// const router = Router();
+
+router.get('/google', ctrl.googleAuth);
+
+router.get('/google-redirect', ctrl.googleRedirect);
 
 router.post(
     '/register',
@@ -35,7 +44,3 @@ router.post(
 router.post('/logout', auth, ctrl.logout);
 
 module.exports = router;
-
-// const baseURL = 'https://goose-track-backend-q3re.onrender.com';
-
-// <a href={`${baseURL}/users/google`}>Google</a>

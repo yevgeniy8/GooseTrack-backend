@@ -8,24 +8,77 @@ const {
     cloudinaryForImage,
     assignToken,
 } = require('../helpers');
-const { JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL } = process.env;
+const { JWT_SECRET, JWT_REFRESH_SECRET } = process.env;
 
-const authGoogle = async (req, res) => {
-    const { _id: id } = req.user;
-    const accessToken = jwt.sign({ id }, JWT_SECRET, { expiresIn: '10m' });
-    const refreshToken = jwt.sign({ id }, JWT_REFRESH_SECRET, {
-        expiresIn: '24h',
-    });
-    const newUser = await User.findByIdAndUpdate(id, {
-        accessToken,
-        refreshToken,
-    });
-    if (!newUser) throw HttpError(500, 'Failed to log in.');
+const queryString = require('querystring');
+const axios = require('axios');
+// const URL = require("url");
 
-    res.redirect(
-        `${FRONTEND_URL}/auth/google?token=${accessToken}&refreshToken=${refreshToken}`
+const googleAuth = async (req, res) => {
+    const stringifiedParams = queryString.stringify({
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+        ].join(' '),
+        response_type: 'code',
+        access_type: 'offline',
+        prompt: 'consent',
+    });
+    return res.redirect(
+        `https://accounts.google.com/o/oauth2/v2/auth?${stringifiedParams}`
     );
 };
+
+const googleRedirect = async (req, res) => {
+    const fullUrl = `${req.protocol}://${req.get('host')}${req.originalUrl}`;
+    const urlObj = new URL(fullUrl);
+    const urlParams = queryString.parse(urlObj.search);
+    const code = urlParams.code;
+    const tokenData = await axios({
+        url: `https://oauth2.googleapis.com/token`,
+        method: 'post',
+        data: {
+            client_id: process.env.GOOGLE_CLIENT_ID,
+            client_secret: process.env.GOOGLE_CLIENT_SECRET,
+            redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+            grant_type: 'authorization_code',
+            code,
+        },
+    });
+    const userData = await axios({
+        url: 'https://www.googleapis.com/oauth2/v2/userinfo',
+        method: 'get',
+        headers: {
+            Authorization: `Bearer ${tokenData.data.access_token}`,
+        },
+    });
+    // userData.data.email
+    // ...
+    // ...
+    // ...
+    return res.redirect(
+        `${process.env.FRONTEND_URL}?email=${userData.data.email}`
+    );
+};
+
+// const authGoogle = async (req, res) => {
+//     const { _id: id } = req.user;
+//     const accessToken = jwt.sign({ id }, JWT_SECRET, { expiresIn: '10m' });
+//     const refreshToken = jwt.sign({ id }, JWT_REFRESH_SECRET, {
+//         expiresIn: '24h',
+//     });
+//     const newUser = await User.findByIdAndUpdate(id, {
+//         accessToken,
+//         refreshToken,
+//     });
+//     if (!newUser) throw HttpError(500, 'Failed to log in.');
+
+//     res.redirect(
+//         `${FRONTEND_URL}/auth/google?token=${accessToken}&refreshToken=${refreshToken}`
+//     );
+// };
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -160,5 +213,6 @@ module.exports = {
     getCurrent: ctrlWrapper(getCurrent),
     logout: ctrlWrapper(logout),
     editUser: ctrlWrapper(editUser),
-    authGoogle: ctrlWrapper(authGoogle),
+    googleRedirect: ctrlWrapper(googleRedirect),
+    googleAuth: ctrlWrapper(googleAuth),
 };
