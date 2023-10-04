@@ -92,7 +92,7 @@ const login = async (req, res) => {
 };
 
 const getCurrent = async (req, res) => {
-    const { email, name, birthday, phone, skype, avatarURL, token } = req.user;
+    const { email, name, birthday, phone, skype, avatarURL } = req.user;
 
     res.json({
         email,
@@ -101,7 +101,6 @@ const getCurrent = async (req, res) => {
         phone,
         skype,
         avatarURL,
-        token,
     });
 };
 
