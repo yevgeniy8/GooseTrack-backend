@@ -18,6 +18,10 @@ const { schemas } = require('../../models/user');
 //     ctrl.authGoogle
 // );
 
+router.get('/google', ctrl.googleAuth);
+
+router.get('/google-redirect', ctrl.googleRedirect);
+
 router.post(
     '/register',
     validateBody(schemas.emptyBody),
