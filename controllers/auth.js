@@ -1,14 +1,9 @@
 const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 // const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
-const {
-    HttpError,
-    ctrlWrapper,
-    cloudinaryForImage,
-    assignToken,
-} = require('../helpers');
-// const { JWT_SECRET, JWT_REFRESH_SECRET, FRONTEND_URL } = process.env;
+const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
+const { JWT_SECRET } = process.env;
 
 // const authGoogle = async (req, res) => {
 //     const { _id: id } = req.user;
@@ -36,27 +31,20 @@ const register = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     // const verificationToken = nanoid();
-    const avatarURL = '../public/defoult.png';
+    // const avatarURL = '../public/defoult.png';
 
     const newUser = await User.create({
         ...req.body,
         password: hashPassword,
-        avatarURL,
+        // avatarURL,
         // verificationToken,
     });
+    const payload = {
+        id: newUser._id,
+    };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
-    // const payload = {
-    //     id: newUser._id,
-    //     email: newUser.email,
-    // };
-    // const accessToken = jwt.sign(payload, JWT_SECRET, {
-    //     expiresIn: '1m',
-    // });
-    // const refreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, {
-    //     expiresIn: '24h',
-    // });
-
-    // await User.findByIdAndUpdate(newUser._id, { refreshToken });
+    await User.findByIdAndUpdate(newUser._id, { token });
 
     //      const verifyEmail = {
     //     to: email,
@@ -67,6 +55,7 @@ const register = async (req, res) => {
     //   await sendEmail(verifyEmail);
 
     res.status(201).json({
+        token,
         user: { email: newUser.email, name: newUser.name },
     });
 };
@@ -88,10 +77,16 @@ const login = async (req, res) => {
         throw HttpError(401, 'Email or password is wrong');
     }
 
-    const { accessToken, refreshToken } = assignToken(user);
-    await User.findByIdAndUpdate(user._id, { refreshToken });
+    // const { accessToken, refreshToken } = assignToken(user);
+    const payload = {
+        id: user._id,
+    };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+
+    await User.findByIdAndUpdate(user._id, { token });
+    // await User.findByIdAndUpdate(user._id, { refreshToken });
     res.status(200).json({
-        accessToken,
+        token,
         user: { email: user.email, name: user.name },
     });
 };
@@ -111,11 +106,12 @@ const getCurrent = async (req, res) => {
 };
 
 const editUser = async (req, res) => {
-    const { body, file } = req;
-    const { name, birthday, phone, skype, email, avatarURL, token } = body;
-    const { _id } = req.user;
+    // const { body, file } = req;
+    const { body, file, user } = req;
+    // const { name, birthday, phone, skype, email, avatarURL, token } = body;
+    // const { _id } = req.user;
 
-    const userData = { name, birthday, phone, skype, email, avatarURL, token };
+    // const userData = { name, birthday, phone, skype, email, avatarURL, token };
 
     if (file) {
         const { avatarURL } = await cloudinaryForImage(req);
@@ -124,9 +120,15 @@ const editUser = async (req, res) => {
         body.avatarURL = body.avatar;
     }
 
-    const newUser = await User.findByIdAndUpdate(_id, userData, {
-        new: true,
-    });
+    const newUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+            $set: body,
+        },
+        {
+            new: true,
+        }
+    );
     if (!newUser) throw HttpError(500, 'Failed');
     if (newUser) {
         const { name, email, birthday, phone, skype, avatarURL, token } =
