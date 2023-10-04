@@ -3,16 +3,15 @@ const jwt = require('jsonwebtoken');
 // const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
 const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
-const { JWT_SECRET } = process.env;
+const { JWT_SECRET, BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
+    process.env;
 
 const queryString = require('querystring');
 const axios = require('axios');
-// const URL = require("url");
-
 const googleAuth = async (req, res) => {
     const stringifiedParams = queryString.stringify({
-        client_id: process.env.GOOGLE_CLIENT_ID,
-        redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+        client_id: GOOGLE_CLIENT_ID,
+        redirect_uri: `${BASE_URL}/auth/google-redirect`,
         scope: [
             'https://www.googleapis.com/auth/userinfo.email',
             'https://www.googleapis.com/auth/userinfo.profile',
@@ -31,13 +30,15 @@ const googleRedirect = async (req, res) => {
     const urlObj = new URL(fullUrl);
     const urlParams = queryString.parse(urlObj.search);
     const code = urlParams.code;
+
+    console.log(code);
     const tokenData = await axios({
         url: `https://oauth2.googleapis.com/token`,
         method: 'post',
         data: {
-            client_id: process.env.GOOGLE_CLIENT_ID,
-            client_secret: process.env.GOOGLE_CLIENT_SECRET,
-            redirect_uri: `${process.env.BASE_URL}/auth/google-redirect`,
+            client_id: GOOGLE_CLIENT_ID,
+            client_secret: GOOGLE_CLIENT_SECRET,
+            redirect_uri: `${BASE_URL}/auth/google-redirect`,
             grant_type: 'authorization_code',
             code,
         },
@@ -49,12 +50,27 @@ const googleRedirect = async (req, res) => {
             Authorization: `Bearer ${tokenData.data.access_token}`,
         },
     });
-    // userData.data.email
-    // ...
-    // ...
-    // ...
+
+    const user = await User.findOne(userData.data.email);
+    if (user) {
+        throw HttpError(409, 'Email in use');
+    }
+
+    const newUser = await User.create({
+        ...userData,
+        // password: hashPassword,
+        // avatarURL,
+        // verificationToken,
+    });
+    const payload = {
+        id: newUser._id,
+    };
+    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+
+    await User.findByIdAndUpdate(newUser._id, { token });
+
     return res.redirect(
-        `${process.env.FRONTEND_URL}?email=${userData.data.email}`
+        `${process.env.FRONTEND_URL}/users/?access_token=${token}`
     );
 };
 
