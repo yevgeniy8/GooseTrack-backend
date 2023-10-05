@@ -8,15 +8,9 @@ const { validateBody, auth } = require('../../middlewares');
 
 const { schemas } = require('../../models/user');
 
-// router.get(
-//     '/google',
-//     passport.authenticate('google', { scope: ['email', 'profile'] })
-// );
-// router.get(
-//     '/google/callback',
-//     passport.authenticate('google', { session: false }),
-//     ctrl.authGoogle
-// );
+router.get('/google', ctrl.googleAuth);
+
+router.get('/google-redirect', ctrl.googleRedirect);
 
 router.post(
     '/register',
