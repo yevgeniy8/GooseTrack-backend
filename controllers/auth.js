@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-// const { nanoid } = require('nanoid');
 const { User } = require('../models/user');
 const { HttpError, ctrlWrapper, cloudinaryForImage } = require('../helpers');
 const { JWT_SECRET, BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
@@ -8,6 +7,7 @@ const { JWT_SECRET, BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
 
 const queryString = require('querystring');
 const axios = require('axios');
+
 const googleAuth = async (req, res) => {
     const stringifiedParams = queryString.stringify({
         client_id: GOOGLE_CLIENT_ID,
@@ -74,23 +74,6 @@ const googleRedirect = async (req, res) => {
     );
 };
 
-// const authGoogle = async (req, res) => {
-//     const { _id: id } = req.user;
-//     const accessToken = jwt.sign({ id }, JWT_SECRET, { expiresIn: '10m' });
-//     const refreshToken = jwt.sign({ id }, JWT_REFRESH_SECRET, {
-//         expiresIn: '24h',
-//     });
-//     const newUser = await User.findByIdAndUpdate(id, {
-//         accessToken,
-//         refreshToken,
-//     });
-//     if (!newUser) throw HttpError(500, 'Failed to log in.');
-
-//     res.redirect(
-//         `${FRONTEND_URL}/auth/google?token=${accessToken}&refreshToken=${refreshToken}`
-//     );
-// };
-
 const register = async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
@@ -100,7 +83,6 @@ const register = async (req, res) => {
 
     const hashPassword = await bcrypt.hash(password, 10);
     // const verificationToken = nanoid();
-    // const avatarURL = '../public/defoult.png';
 
     const newUser = await User.create({
         ...req.body,
