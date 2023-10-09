@@ -6,12 +6,9 @@ const getAll = async (req, res, next) => {
     const owner = req.user._id;
     const { date } = req.body;
 
-    if (/^\d{4}-\d{2}$/.test(date) || /^\d{4}-\d{2}-\d{2}$/.test(date)) {
-        const dateParts = date.split('-');
-        const normalizeDate = dateParts.slice(0, 2).join('-');
-
-        const startOfMonth = normalizeDate + '-01';
-        const endOfMonth = normalizeDate + '-31';
+    if (/^\d{4}-\d{2}$/.test(date)) {
+        const startOfMonth = date + '-01';
+        const endOfMonth = date + '-31';
 
         const result = await Task.find(
             {
@@ -23,7 +20,20 @@ const getAll = async (req, res, next) => {
             },
             '-createdAt -updatedAt'
         );
+        console.log('month');
 
+        return res.json(result);
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        const result = await Task.find(
+            {
+                owner,
+                date: date,
+            },
+            '-createdAt -updatedAt'
+        );
+        console.log('day');
         return res.json(result);
     }
     return res.status(400).json({ error: 'Bad Request' });
