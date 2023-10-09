@@ -20,7 +20,6 @@ const getAll = async (req, res, next) => {
             },
             '-createdAt -updatedAt'
         );
-        console.log('month');
 
         return res.json(result);
     }
@@ -33,10 +32,17 @@ const getAll = async (req, res, next) => {
             },
             '-createdAt -updatedAt'
         );
-        console.log('day');
         return res.json(result);
     }
-    return res.status(400).json({ error: 'Bad Request' });
+
+    // return res.status(400).json({ error: 'Bad Request' });
+    const result = await Task.find(
+        {
+            owner,
+        },
+        '-createdAt -updatedAt'
+    );
+    return res.json(result);
 };
 
 const add = async (req, res) => {
