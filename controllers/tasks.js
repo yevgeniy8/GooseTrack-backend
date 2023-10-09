@@ -35,14 +35,7 @@ const getAll = async (req, res, next) => {
         return res.json(result);
     }
 
-    // return res.status(400).json({ error: 'Bad Request' });
-    const result = await Task.find(
-        {
-            owner,
-        },
-        '-createdAt -updatedAt'
-    );
-    return res.json(result);
+    return res.status(400).json({ error: 'Bad Request' });
 };
 
 const add = async (req, res) => {
