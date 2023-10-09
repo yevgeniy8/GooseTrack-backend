@@ -4,7 +4,7 @@ const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getAll = async (req, res, next) => {
     const owner = req.user._id;
-    const { date } = req.body;
+    const { date } = req.query;
 
     if (/^\d{4}-\d{2}$/.test(date)) {
         const startOfMonth = date + '-01';
