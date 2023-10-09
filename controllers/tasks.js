@@ -4,9 +4,39 @@ const { HttpError, ctrlWrapper } = require('../helpers');
 
 const getAll = async (req, res, next) => {
     const owner = req.user._id;
-    const result = await Task.find({ owner }, '-createdAt -updatedAt');
+    const { date } = req.body;
 
-    res.json(result);
+    if (/^\d{4}-\d{2}$/.test(date)) {
+        const startOfMonth = date + '-01';
+        const endOfMonth = date + '-31';
+
+        const result = await Task.find(
+            {
+                owner,
+                date: {
+                    $gte: startOfMonth,
+                    $lte: endOfMonth,
+                },
+            },
+            '-createdAt -updatedAt'
+        );
+        console.log('month');
+
+        return res.json(result);
+    }
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+        const result = await Task.find(
+            {
+                owner,
+                date: date,
+            },
+            '-createdAt -updatedAt'
+        );
+        console.log('day');
+        return res.json(result);
+    }
+    return res.status(400).json({ error: 'Bad Request' });
 };
 
 const add = async (req, res) => {
@@ -14,7 +44,7 @@ const add = async (req, res) => {
     const owner = req.user._id;
     const result = await Task.create({ ...body, owner });
     if (!result) {
-        throw HttpError();
+        throw HttpError(400);
     }
     res.status(201).json(result);
 };
