@@ -266,10 +266,10 @@
                 }
             }
         },
-        "/users/profile": {
+        "/users/edit": {
             "patch": {
                 "tags": ["Users"],
-                "summary": "Update user's profile",
+                "summary": "Edit information about current user",
                 "parameters": [],
                 "security": [{ "Bearer": [] }],
                 "requestBody": {
@@ -283,66 +283,6 @@
                         }
                     }
                 },
-                "responses": {
-                    "200": {
-                        "description": "Successful operations",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/UpdateProfile"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request (invalid request body)",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/BadRequestResponse"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorised",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Unauthorized"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "NotFound",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/NotFound"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ServerError"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/users/edit": {
-            "patch": {
-                "tags": ["Users"],
-                "summary": "Edit information about current user",
-                "parameters": [],
-                "security": [{ "Bearer": [] }],
                 "responses": {
                     "200": {
                         "description": "Successful operations",

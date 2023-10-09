@@ -119,10 +119,6 @@ const login = async (req, res) => {
         throw HttpError(401, 'Email or password is wrong');
     }
 
-    // if (!user.verify) {
-    //     throw HttpError(401, 'Email not verified');
-    // }
-
     const passwordCompare = await bcrypt.compare(password, user.password);
 
     if (!passwordCompare) {
@@ -139,7 +135,14 @@ const login = async (req, res) => {
     // await User.findByIdAndUpdate(user._id, { refreshToken });
     res.status(200).json({
         token,
-        user: { email: user.email, name: user.name },
+        user: {
+            email: user.email,
+            name: user.name,
+            birthday: user.birthday,
+            phone: user.phone,
+            skype: user.skype,
+            avatarURL: user.avatarURL,
+        },
     });
 };
 
