@@ -31,6 +31,13 @@ const getReviewByOwnerService = async ownerId => {
         throw HttpError(404, 'Review not found');
     }
 
+    const user = await User.findOne({ _id: ownerId }).exec();
+
+    if (!user) {
+        throw HttpError(404, 'User not found');
+    }
+    review.user.avatarURL = user.avatarURL;
+
     return review;
 };
 
