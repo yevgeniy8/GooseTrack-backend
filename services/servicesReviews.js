@@ -12,7 +12,7 @@ const getReviewByOwnerService = async ownerId => {
     if (!review) {
         throw HttpError(404, 'Review not found');
     }
-    const user = await User.findOne({ ownerId }).exec();
+    const user = await User.findOne({ _id: ownerId }).exec();
 
     if (!user) {
         throw HttpError(404, 'User not found');
