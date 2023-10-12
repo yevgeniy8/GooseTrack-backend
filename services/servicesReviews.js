@@ -3,7 +3,25 @@ const { User } = require('../models/user');
 const { HttpError } = require('../helpers');
 
 const getAllReviewsService = async () => {
-    return await Review.find().exec();
+    try {
+        const reviews = await Review.find().exec();
+
+        const updatedReviews = await Promise.all(
+            reviews.map(async review => {
+                const user = await User.findOne({
+                    _id: review.user.owner,
+                }).exec();
+                if (user) {
+                    review.user.avatarURL = user.avatarURL;
+                }
+                return review;
+            })
+        );
+
+        return updatedReviews;
+    } catch (error) {
+        throw HttpError(500, 'Internal Server Error');
+    }
 };
 
 const getReviewByOwnerService = async ownerId => {
@@ -12,13 +30,6 @@ const getReviewByOwnerService = async ownerId => {
     if (!review) {
         throw HttpError(404, 'Review not found');
     }
-    const user = await User.findOne({ _id: ownerId }).exec();
-
-    if (!user) {
-        throw HttpError(404, 'User not found');
-    }
-
-    review.user.avatarURL = user.avatarURL;
 
     return review;
 };
