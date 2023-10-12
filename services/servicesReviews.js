@@ -1,4 +1,5 @@
 const { Review } = require('../models/reviews');
+const { User } = require('../models/user');
 const { HttpError } = require('../helpers');
 
 const getAllReviewsService = async () => {
@@ -11,6 +12,14 @@ const getReviewByOwnerService = async ownerId => {
     if (!review) {
         throw HttpError(404, 'Review not found');
     }
+    const user = await User.findOne({ ownerId }).exec();
+
+    if (!user) {
+        throw HttpError(404, 'User not found');
+    }
+
+    review.user.avatarURL = user.avatarURL;
+
     return review;
 };
 
@@ -29,7 +38,7 @@ const createReviewService = async (
     const newReview = await Review.create({
         review,
         rating,
-        user: { owner: ownerId, name, avatarURL }, // Создаем объект user с вложенными полями
+        user: { owner: ownerId, name, avatarURL },
     });
 
     return newReview;
