@@ -8,7 +8,9 @@ const { JWT_SECRET, BASE_URL, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET } =
 const queryString = require('querystring');
 const axios = require('axios');
 
+let LOCAL_URL = '';
 const googleAuth = async (req, res) => {
+    LOCAL_URL = req.headers.referer;
     const stringifiedParams = queryString.stringify({
         client_id: GOOGLE_CLIENT_ID,
         redirect_uri: `${BASE_URL}/auth/google-redirect`,
@@ -52,27 +54,26 @@ const googleRedirect = async (req, res) => {
     });
     console.log(userData);
 
-    const user = await User.findOne(userData.data.email);
-    if (user) {
-        throw HttpError(409, 'Email in use');
+    const user = await User.findOne({ email: userData.data.email });
+    if (!user) {
+        const newUser = await User.create({
+            name: userData.data.name,
+            email: userData.data.email,
+        });
+        const payload = {
+            id: newUser._id,
+        };
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+        await User.findByIdAndUpdate(newUser._id, { token });
+        return res.redirect(`${LOCAL_URL}GooseTrack/login?token=${token}`);
+    } else {
+        const payload = {
+            id: user._id,
+        };
+        const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
+        await User.findByIdAndUpdate(user._id, { token });
+        return res.redirect(`${LOCAL_URL}GooseTrack/login?token=${token}`);
     }
-
-    const newUser = await User.create({
-        ...userData,
-        // password: hashPassword,
-        // avatarURL,
-        // verificationToken,
-    });
-    const payload = {
-        id: newUser._id,
-    };
-    const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
-
-    await User.findByIdAndUpdate(newUser._id, { token });
-
-    return res.redirect(
-        `${process.env.FRONTEND_URL}/users/?access_token=${token}`
-    );
 };
 
 const register = async (req, res) => {
@@ -83,13 +84,10 @@ const register = async (req, res) => {
     }
 
     const hashPassword = await bcrypt.hash(password, 10);
-    // const verificationToken = nanoid();
 
     const newUser = await User.create({
         ...req.body,
         password: hashPassword,
-        // avatarURL,
-        // verificationToken,
     });
     const payload = {
         id: newUser._id,
@@ -97,14 +95,6 @@ const register = async (req, res) => {
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
     await User.findByIdAndUpdate(newUser._id, { token });
-
-    //      const verifyEmail = {
-    //     to: email,
-    //     subject: "Verify email",
-    //     html: `<a href="${BASE_URL}/users/verify/${verificationToken}" target="_blank">Click verify email</a>`,
-    //   };
-
-    //   await sendEmail(verifyEmail);
 
     res.status(201).json({
         token,
@@ -125,14 +115,13 @@ const login = async (req, res) => {
         throw HttpError(401, 'Email or password is wrong');
     }
 
-    // const { accessToken, refreshToken } = assignToken(user);
     const payload = {
         id: user._id,
     };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: '24h' });
 
     await User.findByIdAndUpdate(user._id, { token });
-    // await User.findByIdAndUpdate(user._id, { refreshToken });
+
     res.status(200).json({
         token,
         user: {

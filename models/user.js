@@ -40,15 +40,6 @@ const userSchema = new Schema(
             default: '',
         },
         token: String,
-        // refreshToken: String,
-        // verify: {
-        //     type: Boolean,
-        //     default: false,
-        // },
-        // verificationToken: {
-        //     type: String,
-        //     required: [true, 'Verify token is required'],
-        // },
     },
     { versionKey: false, timestamps: true }
 );
@@ -84,13 +75,6 @@ const emptyBody = Joi.object()
     .min(1)
     .messages({ 'object.min': 'Missing fields' });
 
-// const emailSchema = Joi.object({
-//     email: Joi.string()
-//         .pattern(emailRegexp)
-//         .required()
-//         .messages({ 'any.required': 'missing required email field' }),
-// });
-
 const editUserSchema = Joi.object({
     name: Joi.string().min(2),
     birthday: Joi.date().allow('', null),
@@ -104,7 +88,6 @@ const schemas = {
     usersSchemaRegister,
     usersSchemaLogin,
     emptyBody,
-    // emailSchema,
     editUserSchema,
 };
 
